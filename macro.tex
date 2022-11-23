@@ -1,0 +1,229 @@
+\documentclass[a4paper,11pt,titlepage,uplatex]{jsarticle}
+
+\usepackage[dvipdfmx]{graphicx,xcolor}% ドライバ指定
+\usepackage[top=30truemm,bottom=30truemm,left=25truemm,right=25truemm]{geometry} % 余白設定
+
+\usepackage{here, subfig} % 画像
+\graphicspath{{./pic/}}
+
+\usepackage{docmute} % ファイル分割用
+
+% 表関連のパッケージ
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{longtable}
+\usepackage{arydshln} % 表で破線を使うため
+\usepackage{multicol}
+% longtableをusepackageする場合は順番が重要らしいです。longtableとarydshlnの順番逆にしたらエラーはく（コンパイルはできるが…）
+
+% 数式関連
+\usepackage{amsmath,amsfonts,amssymb,mathtools,amsthm}
+
+\usepackage{empheq} % 連立方程式をきれいに書いてくれる
+\usepackage{setspace} % 行間を変えることができる。行列に用いれば良い
+\usepackage{bm}
+\usepackage{physics}
+\usepackage[version=3]{mhchem}
+\usepackage[separate-uncertainty]{siunitx}
+%\usepackage{txfonts} % 行列のかっこの形に影響あり
+
+\usepackage{enumitem} % enumium環境いじるため
+\renewcommand{\labelenumi}{\theenumi.}
+\renewcommand{\theenumi}{\Alph{enumi}}
+
+% ------------ url関係
+\usepackage{url}
+\usepackage[dvipdfmx]{hyperref}
+\hypersetup{
+	colorlinks=true,
+	citecolor=blue,
+	linkcolor=red,
+	urlcolor=blue
+}
+\usepackage{pxjahyper}
+% ---------
+\usepackage{otf} % ローマ数字
+\usepackage{arydshln}% 表のダッシュを使う
+
+% ローマ数字のコマンド化
+\newcounter{num}
+\newcommand{\Rnum}[1]{\setcounter{num}{#1} (\Roman{num})}
+\newcommand{\rnum}[1]{\setcounter{num}{#1} (\roman{num})}
+
+% ベクトルコマンド
+\renewcommand{\v}[1]{\bm{#1}}
+
+% サブセクションの数字
+\renewcommand{\thesubsection}{\arabic{subsection}}
+
+% 目次の深さ指定
+%\setcounter{tocdepth}{1}
+
+
+% 数式番号の変更
+\makeatletter
+\@addtoreset{equation}{section}
+\def\theequation{\thesection.\arabic{equation}}% renewcommand でもOK 数式番号を1.3みたいな感じに、章.何番目 と変更
+\makeatother
+
+% -------------------
+% 作図
+\usepackage{tikz}
+\usetikzlibrary{intersections, calc, arrows.meta}
+
+% -------------------
+% 定理環境付近
+\usepackage{tcolorbox} % 色付きの囲み
+\tcbuselibrary{breakable, skins, theorems}
+\usepackage{ascmac} % 囲み \begin{itembox}ができる。
+
+% ------ 新スタイル設定
+\newtheoremstyle{mystyle}%    % スタイル名
+{}%                       % 上部スペース
+{}%                       % 下部スペース
+{\normalfont}%           % 本文フォント
+{}%                       % インデント量
+{\bf}%                   % 見出しフォント
+{}%                       % 見出し後の句読点，'.'
+{\newline}%              % 見出し後のスペース, ' ' or \newline
+{\underline{\thmname{#1}\thmnumber{#2}\thmnote{（#3）}}}%
+%見出しの書式（can be left empty, meaning 'normal'）
+\theoremstyle{mystyle} % スタイルの適用
+
+\newtheorem{theorem}{定理}[section]
+\newtheorem{yousei}{要請}
+
+\newtheorem{mondai}{小問}
+\renewcommand{\themondai}{} % 番号なくすため
+
+\newtheorem{kaitou}{解答}
+\renewcommand{\thekaitou}{}
+
+\newtheorem{teigi}{定義}
+\renewcommand{\theteigi}{}
+\newtheorem{lemma}{補題}[section]
+\renewcommand{\proofname}{証明}
+
+% ------------proof環境をいじる
+\makeatletter %use at mark
+\renewenvironment{proof}[1][\proofname]{\par
+	\pushQED{\qed}%
+	\normalfont \topsep6\p@\@plus6\p@\relax
+	\trivlist
+	\item[\hskip\labelsep
+	            \itshape
+	            {\bf\underline{#1}}]\ignorespaces
+	% {\bf\underline{#1}\@addpunct{.}}]\ignorespaces % ピリオドあり
+}{%
+	\popQED\endtrivlist\@endperfalse
+}
+\makeatother %end at mark
+
+% ----------
+
+% プログラムコードの挿入
+\usepackage{listings, jvlisting}
+
+\definecolor{identifier}{rgb}{0.611, 0.862, 0.996}  % LightBlue (変数)
+\definecolor{comment}{rgb}{0.415, 0.600, 0.333}     % DeepGreen (コメント)
+\definecolor{keyword1}{rgb}{0.768, 0.521, 0.749}    % Purple    (予約語)
+\definecolor{keyword2}{rgb}{0.862, 0.862, 0.666}    % Yellow    (関数名)
+\definecolor{keyword3}{rgb}{0.2, 0.8, 1}            % Blue      (大域変数)
+\definecolor{keyword4}{rgb}{0.854, 0.439, 0.839}    % Pink      (定数)
+\definecolor{string}{rgb}{0.847, 0.560, 0.458}      % Orange    (文字列)
+
+\lstdefinelanguage{myscilab}{
+	morekeywords=[1]{   % 予約語 標準ライブラリを含む
+			for, end, if, then, function, endfunction, 
+			clear, strtod, read_csv, size, zeros, mean, sqrt, floor, string, disp, sum, 
+			cov, cell, cat, exp, matrix, inv, det, int, gsort, tabul, max, 
+		},
+	morekeywords=[2]{   % 関数名
+			get_class_range,
+			bayes_train,
+			bayes_valid,
+		},
+	morekeywords=[3]{   % 大域変数
+			DATADIR, ALLDATA,
+			FEATURE1, FEATURE2, FEATURES,
+			FDIM, FDATA, ALLDATA,
+			N_CLASS, N_FDATA, N_CLASS_DATA,
+		},
+	morekeywords=[4]{ \%inf, \%pi, },   % 定数
+	sensitive=true,         % 大文字小文字の区別
+	morecomment=[l]{//},    % コメントアウト
+	morestring=[d]{'}{'},   % 文字列 (シングル)
+	morestring=[b]{"},      % 文字列 (ダブル)
+	alsoletter={\%},        % 文字としてに\%を追加
+}
+
+\lstset{
+	language=myscilab,  % 新しく定義した言語を設定
+	frame = tbrl,         % 枠設定
+	breaklines=true,    % 行が長くなった場合自動改行
+	breakindent=12pt,   % 自動改行時のインデント
+	columns=fixed,      % 文字の間隔を統一
+	basewidth=0.5em,    % 文字の横のサイズを小さく
+	%numbers=left,       % 行数の位置
+	numberstyle={\scriptsize \color{white}},  % 行数のフォント
+	stepnumber=1,       % 行数の増間
+	numbersep=1zw,      % 行数の余白
+	xrightmargin=0zw,   % 左の余白
+	xleftmargin=2zw,    % 右の余白
+	framexleftmargin=18pt,  % フレームからの左の余白
+	keepspaces=true,    % スペースを省略せず保持
+	lineskip=-0.2ex,    % 枠線の途切れ防止
+	tabsize = 4,        % タブ数
+	showstringspaces=false,  %文字列中の半角スペースを表示させない
+	keepspaces=true, % コード中のスペースを省略しない
+	%%%%% VSCode風 の style & color %%%%%
+	backgroundcolor={\color[gray]{0.1}},                    %背景色
+	basicstyle     ={\small\ttfamily \color{white}},        % 基礎の文字のフォント設定
+	identifierstyle={\small          \color{identifier}},   % 変数名などのフォント設定
+	commentstyle   ={\small          \color{comment}},      % コメントのフォント設定
+	keywordstyle   =[1]{\small\bfseries \color{keyword1}},  % 予約語のフォント設定
+	keywordstyle   =[2]{\small\bfseries \color{keyword2}},  % 関数名のフォント設定
+	keywordstyle   =[3]{\small\bfseries \color{keyword3}},  % 大域変数のフォント設定
+	keywordstyle   =[4]{\small\bfseries \color{keyword4}},  % 定数のフォント設定
+	stringstyle    ={\small\ttfamily    \color{string}},    % 文字列のフォント設定
+	%%%%% VSCode風 の style & color %%%%%
+}
+
+
+% \lstset{
+% 	%プログラム言語(複数の言語に対応，C,C++も可)
+% 	language = {C},
+% 	%背景色と透過度
+% 	backgroundcolor={\color[gray]{.90}},
+% 	%枠外に行った時の自動改行
+% 	breaklines = true,
+% 	%自動改行後のインデント量(デフォルトでは20[pt])
+% 	breakindent = 10pt,
+% 	%標準の書体
+% 	basicstyle = {\ttfamily\scriptsize},
+% 	%コメントの書体
+% 	commentstyle = {\itshape \color[rgb]{0,0.5,0}},
+% 	%関数名等の色の設定
+% 	classoffset = 0,
+% 	%キーワード(int, ifなど)の書体
+% 	keywordstyle = {\bfseries \color[rgb]{1,0,0}},
+% 	%""で囲まれたなどの"文字"の書体
+% 	stringstyle = {\ttfamily \color[rgb]{0,0,1}},
+% 	%枠 "t"は上に線を記載, "T"は上に二重線を記載
+% 	%他オプション: leftline, topline, bottomline, lines, single, shadowbox
+% 	frame = tbrl,
+% 	%frameまでの間隔(行番号とプログラムの間)
+% 	framesep = 5pt,
+% 	%行番号の位置
+% 	numbers = left,
+% 	%行番号の間隔
+% 	stepnumber = 1,
+% 	%行番号の書体
+% 	numberstyle = \tiny,
+% 	%タブの大きさ
+% 	tabsize = 4,
+% 	%キャプションの場所("tb"ならば上下両方に記載)
+% 	captionpos = t
+% }
+
+

@@ -1,0 +1,98 @@
+\input{macro.tex}
+
+
+\begin{document}
+\title{{\LaTeX}の環境構築}
+\author{20B01392 松本侑真}
+\date{\today}
+\maketitle
+\tableofcontents
+\newpage
+
+\section{PDFビュアーについて}
+SmatraPDFの詳細設定\url{https://www.sumatrapdfreader.org/docs/Advanced-options-settings}
+
+\begin{lstlisting}
+	InverseSearchCmdLine = "C:\Users\yuuma\AppData\Local\Programs\Microsoft VS Code\Code.exe" "C:\Users\yuuma\AppData\Local\Programs\Microsoft VS Code\resources\app\out\cli.js" --ms-enable-electron-run-as-node -r -g "%f:%l"
+\end{lstlisting}
+としたらPDFからtexファイルへの場所がわかるらしいが、うまくできないので保留。
+
+\section{VSCodeについて}
+
+\section{WSL2について}
+\subsection{ディストリビューションの競合問題について}
+VSCodeにおいてwsl.exeを実行したときに起動されるディストリビューションは規定のものなので、
+2つ以上のディストリビューションを用いている際には注意が必要。解決法としては、以下のようにディストリビューションを指定すれば良い。
+
+\begin{lstlisting}[caption=ディストリビューションの指定]
+	// ビルドのレシピに使われるパーツ
+	"latex-workshop.latex.tools": [
+		{
+			"name": "latexmk",
+			"command": "wsl.exe",
+			"args": [
+				"-d",
+				"Ubuntu-20.04",
+				"latexmk",
+				"-interaction=nonstopmode",
+				"-silent",
+				"-l", //
+				"-synctex=1",
+				"-outdir=%OUTDIR%",
+				"%DOCFILE%"
+			]
+		}
+	]
+	\end{lstlisting}
+
+\subsection{}
+
+\section{SettingJson}
+
+\section{{\TeX}のエラーについて}
+
+\subsection{bibを入れたときのエラー}
+\verb|\bibliographystyle{junsrt}|を入れて、それを消して再び入れたときにエラー吐く。
+そのときはoutフォルダを削除すれば再びコンパイルできるようになる。
+
+\subsection{longtableのinclude順番}
+\begin{verbatim}
+	% 表関連のパッケージ
+	\usepackage{booktabs}
+	\usepackage{multirow}
+	\usepackage{longtable}
+	\usepackage{arydshln}% 表で破線を使うため
+	\usepackage{multicol}
+	% longtableをusepackageする場合は順番が重要らしいです。longtableとarydshlnの順番逆にしたらエラーはく（コンパイルはできるが…）
+\end{verbatim}
+
+longtableの使い方は以下。
+\begin{lstlisting}
+\begin{longtable}{rrrrr} 
+
+\caption{Add caption}
+\label{tab:addlabel}\\ % <=======================================
+  \toprule
+  theta\_1 & r2v   & r3v   & x     & y \\
+  \midrule  
+\endfirsthead % <=======================================
+  \toprule
+  theta\_1 & r2v   & r3v   & x     & y \\
+  \midrule  
+\endhead % <=======================================
+  \midrule 
+  \multicolumn{5}{r}{\textit{Continued on next page}} \\ % <=======================================
+  \bottomrule
+\endfoot % <=======================================
+  \bottomrule
+\endlastfoot % <=======================================
+    49.22794 & 0.35873 & 0.39838 & -0.57966 & 0.62744 \\
+    36.26729 & 0.06672 & 0.05691 & 0.02389 & 0.70802 \\
+    9.63361 & 0.22289 & 0.07941 & 0.29043 & 0.77239 \\
+    65.17496 & 0.25439 & 0.17791 & -0.54248 & 0.60032 \\
+    55.23141 & 0.26525 & 0.42388 & -0.57985 & 0.48911 \\
+
+\end{longtable}
+\end{lstlisting}
+
+\end{document}
